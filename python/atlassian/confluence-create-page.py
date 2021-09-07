@@ -1,9 +1,20 @@
+#!/usr/bin/env python
+
 from atlassian import Confluence
 
+CONFIG_FILE = 'api-key.yml'
+
+with open(CONFIG_FILE, 'r') as config_file:
+    config = yaml.load(config_file)
+
+apikey = config['confluence']['apikey']
+username = config['confluence']['username']
+url = config['confluence']['url']
+
 confluence = Confluence(
-    url='https://ivand.atlassian.net',
-    username='ivanskyd@gmail.com',
-    password='09PKKHn00tuJNCKbYvuT1FB5')
+    url=url,
+    username=username,
+    password=apikey)
 
 status = confluence.create_page(
     space='MYSTUFF',

@@ -1,2 +1,4 @@
 " This colorscheme gives reasonable contrast on dark backgrounds
+" Look in /usr/share/vim/vim81/colors for other colorscheme files
+" Or you can go looking for new schemes on e.g. vimcolorschemes.com if you are really keen
 colorscheme desert

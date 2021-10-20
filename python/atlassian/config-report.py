@@ -25,21 +25,21 @@ class Backup:
         return self.device
 
     def latest(self):
-        return self.backups[-1]
-
+        if len(self.backups) >= 1:
+            return self.backups[-1].split('/')[0]
+        else:
+            return "NotFound"
 
 def main():
     parser = ConfigParser()
-    parser.read('/mnt/c/Users/micro/Documents/Computing/dev/code-snippets/python/atlassian/config.ini')
+    parser.read('config-demo.ini')
     device_list_file = parser['backups']['device_list']
     apikey = parser['confluence']['apikey']
     username = parser['confluence']['username']
     url = parser['confluence']['url']
     page_ID = parser['confluence']['page_ID']
 
-    confluence = Confluence(url=url,
-                            username=username,
-                            password=apikey)
+    confluence = Confluence(url=url, username=username, password=apikey)
 
     # Read in all the devices from the nominated file
     with open(device_list_file) as file:
@@ -50,9 +50,9 @@ def main():
 
     for device in devices:
         device_bkp = Backup(device, parser['backups']['path'])
-        print(f"Latest backup for {device_bkp.name()} is {device_bkp.latest()}")
-        (date, my_device) = device_bkp.latest().split('/')
-        wiki_table += "\n" + f"|{my_device}|{date}|"
+        latest_bkp_date = device_bkp.latest()
+        print(f"Latest backup for {device_bkp.name()} is {latest_bkp_date}")
+        wiki_table += "\n" + f"|{device}|{latest_bkp_date}|"
 
     print("Wiki text for table is:")
     print(wiki_table)

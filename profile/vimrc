@@ -1,0 +1,8 @@
+" This colorscheme gives reasonable contrast on dark backgrounds
+" Look in /usr/share/vim/vim81/colors for other colorscheme files
+" Or you can go looking for new schemes on e.g. vimcolorschemes.com if you are really keen
+" Other good options are delek, elflord, industry, murphy, slate, torte, 
+colorscheme desert
+"
+" Make sure syntax highlighting is on
+syntax on

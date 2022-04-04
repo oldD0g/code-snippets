@@ -6,12 +6,12 @@ TARGET=192.168.86.39
 SLEEPMAX=5
 RUNMAX=10
 
-while [1 ]; do
+while [ 1 ]; do
   rnd1=$RANDOM
   rnd2=$RANDOM
   
-  sleepTime=`expr $rnd1 % SLEEPMAX`
-  runTime=`expr $rnd2 % RUNMAX`
+  sleepTime=`expr $rnd1 % $SLEEPMAX`
+  runTime=`expr $rnd2 % $RUNMAX`
   runTime=`expr $runTime +1` # Because 0 means forever
   
   echo "Running ping for $runTime seconds then sleeping for $sleepTime"

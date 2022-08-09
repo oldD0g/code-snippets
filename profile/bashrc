@@ -1,0 +1,24 @@
+# This is for OS X
+# Git prompt stuff from https://github.com/matijs/dotfiles/blob/dotfiles/.config/shell/prompt
+
+# /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh is used as provided
+
+if [[ $OSTYPE =~ darwin ]]; then
+  git_prompt=/Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh;
+else
+  git_prompt=/usr/share/git-core/contrib/completion/git-prompt.sh;
+fi
+
+if [[ -s ${git_prompt} ]]; then
+  source "${git_prompt}";
+  export GIT_PS1_SHOWDIRTYSTATE=true;
+  export GIT_PS1_SHOWSTASHSTATE=true;
+  export GIT_PS1_SHOWUPSTREAM='auto';
+  export GIT_PS1_DESCRIBE_STYLE='branch';
+  export GIT_PS1_SHOWCOLORHINTS=true;
+  export PS1='(\!) \u@\h:\W $(__git_ps1 "[%s] ")\$ ';
+else
+  export PS1='(\!) \u@\h:\W \$ ';
+fi
+
+unset git_prompt;

@@ -6,3 +6,20 @@ colorscheme desert
 "
 " Make sure syntax highlighting is on
 syntax on
+
+" Some other Python settings from http://bit.ly/3W6s6uv (SO)
+autocmd FileType tex,latex,python set showmatch
+
+nnoremap j gj
+nnoremap k gk
+
+"Python Settings
+autocmd FileType python set softtabstop=4
+autocmd FileType python set tabstop=4
+autocmd FileType python set autoindent
+autocmd FileType python set expandtab
+autocmd FileType python set textwidth=100
+autocmd FileType python set smartindent
+autocmd FileType python set shiftwidth=4
+autocmd FileType python map <buffer> <F2> :w<CR>:exec '! python' shellescape(@%, 1)<CR>
+autocmd FileType python imap <buffer> <F2> <esc>:w<CR>:exec '! python' shellescape(@%, 1)<CR>

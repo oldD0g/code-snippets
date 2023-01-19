@@ -1,4 +1,13 @@
-# This is for OS X
+# This is for OS X but may be useful everywhere, I'm just collecting handy bash settings
+
+# This checkwinsize setting is really useful when you make a fancy coloured prompt
+# Otherwise you may have problems with command history not displaying correctly,
+# and editing long command lines also not working
+# This is discussed in a number of places, but I got this from
+# http://mywiki.wooledge.org/BashFAQ/053
+
+shopt -s checkwinsize
+
 # Git prompt stuff from https://github.com/matijs/dotfiles/blob/dotfiles/.config/shell/prompt
 
 # /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh is used as provided

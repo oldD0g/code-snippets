@@ -7,6 +7,9 @@ colorscheme desert
 " Make sure syntax highlighting is on
 syntax on
 
+" Use F4 to toggle paste mode when pasting in code
+set pastetoggle=<F4>
+
 " Some other Python settings from http://bit.ly/3W6s6uv (SO)
 autocmd FileType tex,latex,python set showmatch
 

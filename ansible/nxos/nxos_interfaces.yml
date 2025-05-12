@@ -1,0 +1,16 @@
+nxos_interfaces:
+  - name: 'Loopback100'
+    description: 'This is a loopback'
+    enabled: True
+  - name: 'Loopback101'
+    description: 'This is another loopback'
+    enabled: True
+
+nxos_l3_interfaces:
+  - name: 'Loopback100'
+    ipv4:
+      - address: '100.100.100.100/32'
+  - name: 'Loopback101'
+    ipv4:
+      - address: '100.100.100.101/32'
+

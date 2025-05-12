@@ -1,0 +1,73 @@
+# This playbook uses a series of transforms with items in a loop
+# It is intended to demonstrate that you can take a list of data
+# items and transform the multiple times into a final product.
+# You might want to do this, for instance, with Ansible JunOS
+# modules to render then parse.
+- hosts: localhost
+  gather_facts: no
+  vars:
+    things:
+      - foo
+      - bar
+      - baz
+
+  tasks:
+    - name: 'Run stat on item'
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: result1
+      with_items: "{{ things }}"
+      loop_control:
+        label: "{{item}}"
+      delegate_to: localhost
+
+#    - name: 'DEBUG: Print out result1 in its entirety'
+#      ansible.builtin.debug:
+#        msg:
+#          - "result1 is set to:"
+#          - "{{result1}}"
+#          - "result1.results[0].stat.path is:"
+#          - "{{result1.results[0].stat.path}}"
+#      delegate_to: localhost
+
+    - name: 'Print out part of the results, looping through items'
+      ansible.builtin.debug:
+        msg:
+          - "Path is: {{item | to_json| from_json | json_query('stat.path')}}"
+          - "Size is: {{item | to_json| from_json | json_query('stat.size')}}"
+
+      with_items: "{{result1.results}}"
+      loop_control:
+        index_var: my_idx
+        label: "{{my_idx}}"
+      delegate_to: localhost
+
+    - name: 'Set up empty list for results'
+      ansible.builtin.set_fact:
+        my_results: []
+
+    - name: 'Combine parts of the stat results, creating a new array'
+      ansible.builtin.set_fact:
+        my_results: "{{my_results + [item|to_json|from_json|json_query('stat.path') + ' is ' + item|to_json|from_json|json_query('stat.size')|string + ' bytes.' ] }}"
+      with_items: "{{result1.results}}"
+      register: result2
+      loop_control:
+        index_var: my_idx
+        label: "{{my_idx}}"
+      delegate_to: localhost
+
+#    - name: 'DEBUG: Print out result2 in its entirety'
+#      ansible.builtin.debug:
+#        msg:
+#          - "result2 is set to:"
+#          - "{{result2}}"
+
+# So, strangely result2 is now set to ALL of the stat results, with an added "ansible_facts"
+#  containing my new strings
+
+    - name: 'Print out what is in my_results'
+      ansible.builtin.debug:
+        msg:
+          - "my_results is set to: "
+          - "{{my_results}}"
+      delegate_to: localhost

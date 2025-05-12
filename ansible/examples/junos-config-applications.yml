@@ -1,0 +1,36 @@
+# To run any Juniper native modules in Ansible, install the Ansible collection
+# first:
+#   ansible-galaxy collection install junipernetworks.junos
+# This playbook adds an application, this can be done with the
+# junos_command or junos_config module, with slightly different formats
+#
+---
+- name: Use junos_config to add some lines to the config
+  hosts: junos-fw01
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: Set example applications dict
+      set_fact:
+        custom_applications:
+          ldap-tls-tcp-636:
+            protocol: tcp
+            dst_port: 636
+          squid-proxy-tcp-3128:
+            protocol: tcp
+            dst_port: 3128
+
+    - name: Loop through applications
+      ansible.builtin.debug: 
+        msg:
+          - "set applications application {{ item.key }} protocol {{ item.value['protocol'] }}"
+          - "set applications application {{ item.key }} destination-port {{ item.value['dst_port'] }}"
+      loop: "{{ custom_applications | dict2items }}"
+
+    - name: load configure lines into device
+      junipernetworks.junos.junos_config:
+        lines:
+          - set applications application ldap-tls-tcp-636 protocol tcp
+          - set applications application ldap-tls-tcp-636 source-port 1024-65535
+          - set applications application ldap-tls-tcp-636 destination-port 636

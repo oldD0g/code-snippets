@@ -1,0 +1,38 @@
+#
+# You can run this test with:
+# ansible-playbook --extra-vars "@lists-and-dicts.yml" -i none loop-lists-and-dicts.yml
+#
+---
+- name: "Testing the ternary operator to set MTU"
+  hosts: 
+    - junos-fw01
+    - localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+    - name: 'Create empty list'
+      set_fact:
+       cmd_lines: []
+
+    - name: Loop through interfaces and list proposed MTU
+      ansible.builtin.debug:
+        msg: 
+          - "MTU for {{ item.name }} is {{ ((item.mtu == None) |ternary(
+                  '', item.mtu)
+                  if item.mtu is defined else 'not set') }}"
+      loop: "{{ interfaces }}"
+
+#    - name: Loop through interfaces
+#      set_fact:
+#        cmd_lines: "{{ cmd_lines + [ 'set interface ' + item.name  + ' mtu ' + item.mtu|string ] }}"
+#      loop: "{{ interfaces }}"
+#      loop_control:
+#        label: "{{ item.name }}"
+
+    - name: Dump variables for debugging
+      ansible.builtin.debug:
+        msg:
+          - "cmd_lines contains {{ cmd_lines }}"
+

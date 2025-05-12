@@ -1,0 +1,27 @@
+#
+# You can run this test with:
+# ansible-playbook --extra-vars "@dns.yml" -i none loop-dns.yml
+#
+---
+- name: "Process triple deep nesting, as needed for address sets"
+  hosts: 
+    - junos-fw01
+    - localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - set_fact:
+        zones_loop: >
+          {{ zones_loop|d([])
+            + [ {} | combine(item[0]) | combine(item[1]) ]
+          }}
+      with_subelements:
+        - "{{ dns }}"
+        - zones
+
+    - debug:
+        msg: "{{ item }}"
+      with_subelements:
+        - "{{ zones_loop }}"
+        - records

@@ -1,0 +1,68 @@
+#
+# You can run this test with:
+# ansible-playbook --extra-vars "@addresses.yml" -i none loop-address-sets.yml
+# The only problem with this at the moment is I don't have the top level
+# name of the address book, that seems to have been processed out!
+#
+# There seems to be another very hacky way of doing this at the answer:
+# https://stackoverflow.com/questions/65564003/ansible-loop-over-list-of-dicts-3-levels-deep-in-a-dictionary
+#
+# Using a custom filter might actually be a neater way to do this. The basic
+# problem is that there are three levels of lists:
+#  the address-book
+#  the address-sets
+#  the addresses within each address-set
+#
+#  And Ansible just doesn't have any way of dealing neatly with that.
+#  This article with a custom filter approach might work:
+#  https://stackoverflow.com/questions/71224961/how-to-reference-multiple-sub-elements-using-ansible
+---
+- name: "Process triple deep nesting, as needed for address sets"
+  hosts: 
+    - junos-fw01
+    - localhost
+  connection: local
+  gather_facts: no
+
+#            + [ {} | combine(item[0]) | combine(item[1]) ]
+  tasks:
+    - name: 'Transform the address set data into a simpler structure for processing'
+      set_fact:
+        address_set_list: >
+          {{ address_set_list|d([])
+             + [ {'address_book_name': item.0.name} | combine(item[0]) | combine(item[1]) ]
+          }}
+      loop: "{{ query('subelements', address_books, 'address_sets', {'skip_missing': True} ) }}"
+      # query works because lookup doesn't always return a list
+      # this syntax is required because not all address books have address sets, so you need
+      # to be able to set skip_missing to True
+
+    - name: 'Dump entire address_set_list'
+      ansible.builtin.debug:
+        msg:
+          - "refactored loop is now: {{ address_set_list }}"
+
+    - name: 'Loop through re-constructed data'
+      ansible.builtin.debug:
+        msg: 
+          - "set security address-book {{ item.0.address_book_name }} address-set {{ item.0.name}} address {{item.1.name}}"
+          - "{{ item}}"
+      with_subelements:
+        - "{{ address_set_list }}"
+        - addresses
+
+    # This doesn't work because it doesn't iterate over the addresses in the address sets.
+    - name: 'See how item is defined in subelements loop'
+      ansible.builtin.debug:
+        msg:
+          - "On loop iteration {{ loop_counter }}"
+          - "Item is: {{ item}}"
+          - "item.0 is {{ item.0 }}"
+          - "item.1 is {{ item.1 }}"
+          - "address set name is {{ item.0.name }}"
+      loop: "{{ lookup('subelements', address_books, 'address_sets', {'skip_missing': True} ) }}"
+      #with_subelements: 
+      #  - "{{ address_books }}"
+      #  - address_sets
+      loop_control: 
+        index_var: loop_counter

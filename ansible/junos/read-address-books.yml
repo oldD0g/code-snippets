@@ -1,0 +1,102 @@
+---
+- name: "Retrieve firewall configurations in various formats"
+  hosts:
+    - junos-fw01
+    - localhost
+  connection: ansible.netcommon.netconf
+  gather_facts: no
+
+  tasks:
+
+  - name: Set output format
+    set_fact:
+      output_format: xml
+    delegate_to: localhost
+
+  - name: 'Read address books to allow experimenting with different formats'
+    junipernetworks.junos.junos_command:
+      commands: 
+        - show configuration security address-book
+      display: "{{ output_format }}"
+    register: junos_address_books_xml
+    when: output_format == 'xml'
+
+  # junipernetworks.junos.junos_command currently has a bug that stops retrieval of configs in JSON format
+  - name: 'Read config in JSON format using junos_facts'
+    junipernetworks.junos.junos_facts:
+      gather_subset:
+        - all
+      config_format: json
+    register: junos_address_books_json
+    when: output_format == 'json'
+
+  # json_query does not like the hyphen character in an extended query like this
+  - name: 'Extract address books in JSON format'
+    ansible.builtin.set_fact:
+      ab_json: "{{ junos_address_books_json | community.general.json_query('ansible_facts.ansible_net_config.configuration.security') }}"
+    when: output_format == 'json'
+
+  # But it's easy enough to quote the hyphen in a simple query
+  - name: 'Save JSON address books in retrieved_junos_address_books variable'
+    ansible.builtin.set_fact:
+      junos_address_books_json: "{{ ab_json | community.general.json_query('\"address-book\"') }}"
+    when: output_format == 'json'
+
+  - name: 'Debug retrieved_junos_address_books'
+    delegate_to: localhost
+    ansible.builtin.debug:
+      msg:
+        - "Config retrieved in {{ output_format}} is: {{ junos_address_books_json }}"
+
+  #
+  # "set" format only works if you retrieve the whole configuration,
+  # so the config is retrieved, then lines matching 'address-book' are 
+  # extracted.
+
+  - name: 'Retrieve full configuration as this is required for set format'
+    junipernetworks.junos.junos_command:
+      commands:
+        - show configuration
+      display: "{{ output_format }}"
+    register: junos_address_books_set
+    when: output_format == 'set'
+
+  # A loop approach to this generates a lot of "skipped" output
+  # so a select/match approach is neater
+  - name: 'Extract address books from config in set format using select'
+    ansible.builtin.set_fact:
+        ab_lines2: "{{ junos_address_books_set.stdout_lines[0] | select('match','.*address-book.*') | list  }}"
+    delegate_to: localhost
+    when:
+      - output_format == 'set'
+
+  - name: 'Save address-books in set format'
+    ansible.builtin.set_fact:
+        junos_address_books_set: "{{ ab_lines2 }}"
+    delegate_to: localhost
+    when:
+      - output_format == 'set'
+
+  - name: 'Output retrieved address-book config in XML'
+    delegate_to: localhost
+    ansible.builtin.debug:
+      msg:
+        - "Config retrieved in {{ output_format}} is: {{ junos_address_books_xml }}"
+    when:
+      - output_format == 'xml'
+
+  - name: 'Output retrieved address-book config in set format'
+    delegate_to: localhost
+    ansible.builtin.debug:
+      msg:
+        - "Config retrieved in {{ output_format}} is: {{ junos_address_books_set }}"
+    when:
+      - output_format == 'set'
+
+  - name: 'Output retrieved address-book config in JSON format'
+    delegate_to: localhost
+    ansible.builtin.debug:
+      msg:
+        - "Config retrieved in {{ output_format}} is: {{ junos_address_books_json }}"
+    when:
+      - output_format == 'json'

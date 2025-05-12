@@ -1,0 +1,39 @@
+# This playbook is meant to just retrieve the junos_facts using the Galaxy
+# module, then save them to a file.
+# If you don't have the junipernetworks.junos collection installed, do this first:
+#   ansible-galaxy collection install junipernetworks.junos
+---
+- name: Fetch configs and see when ansible_facts comes back...
+  hosts: junos-fw01
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: Fetch entire config in json format using junos_facts
+      junipernetworks.junos.junos_facts:
+        gather_subset: 
+          - all
+        config_format: json
+      register: retrieved_config
+
+    - name: 'set current timestamp'
+      ansible.builtin.command: date -u +%Y%m%d_%H%M%S
+      delegate_to: localhost
+      register: timestamp
+
+    - name: 'Set output_file'
+      set_fact:
+        output_path: "~/ansible"
+      delegate_to: localhost
+
+    - name: 'Set output_file'
+      set_fact:
+        output_file: "{{ output_path }}/{{ inventory_hostname }}_{{ timestamp.stdout }}.cfg"
+      delegate_to: localhost
+
+    - name: Print out results
+      ansible.builtin.debug:
+        msg:
+          - "retrieved_config['ansible_facts'] is: {{retrieved_config['ansible_facts']}}"
+          - "output_file in ansible_facts is {{retrieved_config['ansible_facts']['output_file']}}"
+

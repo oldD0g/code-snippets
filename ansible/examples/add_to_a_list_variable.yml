@@ -1,0 +1,42 @@
+---
+- name: Generate application commands based on YML config
+  hosts: junos-fw01
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+    - name: Set up custom applications dictionary
+      set_fact:
+        custom_applications:
+          ldap-tls-tcp-636:
+            protocol: tcp
+            dst_port: 636
+          squid-proxy-tcp-3128:
+            protocol: tcp
+            dst_port: 3128
+
+    - name: Set up empty list to store commands for firewall
+      set_fact:
+        cmd_lines: []
+
+    - name: Loop through applications and add to commands list
+      # This task adds lines to the 'cmd_lines' list to set the applications, based on the
+      # custom_applications dictionary
+      set_fact:
+        cmd_lines: "{{ cmd_lines + [ 'set applications application ' + item.key  + ' protocol ' + item.value.protocol ] + \
+             [ 'set applications application ' + item.key  + ' destination-port ' + item.value.dst_port|string ] }}"
+      loop: "{{ custom_applications | dict2items }}"
+
+    - name: Show cmd_lines after loop
+      ansible.builtin.debug: 
+        msg:
+          - "cmd_lines is: {{ cmd_lines }}"
+
+    - name: Loop through applications
+      ansible.builtin.debug: 
+        msg:
+          - "set applications application {{ item.key }} protocol {{ item.value['protocol'] }}"
+          - "set applications application {{ item.key }} destination-port {{ item.value['dst_port'] }}"
+          - "set applications application {{ item.key }} source-port {{ item.value['src_port']|default('1024-65535') }}"
+      loop: "{{ application_custom_services | dict2items }}"

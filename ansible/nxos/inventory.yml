@@ -1,0 +1,12 @@
+all:
+  vars:
+    ansible_ssh_port: 22
+  children:
+    switches:
+      hosts:
+        dev-nxos-sw01:
+          ansible_host: 131.226.217.151
+          ansible_ssh_user: admin
+          ansible_ssh_password: "Admin_1234!"
+          ansible_network_os: nxos
+

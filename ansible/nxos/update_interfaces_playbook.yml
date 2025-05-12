@@ -1,0 +1,30 @@
+---
+
+- name: 'Update interfaces on an NXOS device'
+  connection: ansible.netcommon.network_cli
+  gather_facts: false
+  hosts: all
+  tasks:
+
+    - name: 'DEBUG'
+      ansible.builtin.debug:
+        msg:
+          - "Starting playbook"
+
+    - name: 'update interfaces'
+      cisco.nxos.nxos_interfaces:
+        config: '{{ nxos_interfaces }}'
+      when:
+        nxos_interfaces is defined
+      tags:
+        - update_interfaces
+
+
+    - name: 'update l3 interfaces'
+      cisco.nxos.nxos_l3_interfaces:
+        config: '{{ nxos_l3_interfaces }}'
+      when:
+        nxos_l3_interfaces is defined
+      tags:
+        - update_interfaces
+

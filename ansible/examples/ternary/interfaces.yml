@@ -1,0 +1,29 @@
+---
+# YML interface definitions
+#
+# Run with 
+#
+
+interfaces:
+  - name: 'Ethernet0/0'
+    description: 'Test Ethernet interface settings'
+    state: up
+    mtu: 1472
+    ipv4_address: 10.10.10.10
+    ipv4_netmask: 255.255.255.0
+
+  - name: 'Port-channel201'
+    description: 'Port channel 201 to somewhere'
+    state: up
+    mtu: none
+    members: ['TenGigabitEthernet1/0/1', 'TenGigabitEthernet2/0/1']
+    allowed_vlans: '1,5,15,25'
+    mode: trunk
+
+  - name: 'TenGigabitEthernet1/0/1'
+    description: 'Trunk as part of port-channel 201'
+    state: up
+    channel_group: 201
+    channel_mode: active
+    allowed_vlans: '1,5,15,25'
+

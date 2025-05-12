@@ -1,0 +1,32 @@
+# This is based on a SO question at 
+# https://stackoverflow.com/questions/49772057/ansible-with-subelements-nested-levels
+#
+---
+
+address_books:
+  - name: cust1-clients-addresses
+    zone: prod
+    address_sets:
+      - name: address-set-prod
+        addresses:
+          - name: web.prod.com
+
+  - name: address-book-without-any-sets
+    zone: test
+    addresses:
+      - name: some-system
+        ipv4_prefix: 10.10.10.10/32
+      - name: another-system
+        ipv4_prefix: 10.10.10.11/32
+
+  - name: dev-addresses
+    zone: dev
+    address_sets:
+      - name: dev-address-set-1
+        addresses:
+          - name: dev-address-set-1-entry-1
+      - name: dev-address-set-2
+        addresses:
+          - name: dev-address-set-2-entry-1
+          - name: dev-address-set-2-entry-2
+

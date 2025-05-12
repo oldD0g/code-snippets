@@ -1,0 +1,36 @@
+# This is from a SO question at 
+# https://stackoverflow.com/questions/49772057/ansible-with-subelements-nested-levels
+#
+---
+
+dns:
+  - name: Production
+    prefix: prod
+    zones:
+      - zone: prod.com
+        records:
+          - record: web.prod.com
+            type: TXT
+            value: '"somethingtest"'
+            ttl: 60
+
+  - name: Dev
+    prefix: dev
+    zones:
+      - zone: devthing.com
+        records:
+          - record: testing.devthing.com
+            type: TXT
+            value: '"devthingtest"'
+            ttl: 60
+      - zone: testthing.com
+        records:
+          - record: testing.testthing.com
+            type: TXT
+            value: '"testthingtest"'
+            ttl: 60
+          - record: thingy.testthing.com
+            type: TXT
+            value: '"testthingthingytest"'
+            ttl: 60
+

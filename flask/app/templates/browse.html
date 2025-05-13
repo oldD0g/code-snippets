@@ -1,0 +1,168 @@
+{% extends "layout.html" %}
+
+{% block title %}Configuration File {% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+  <h1>Config File </h1>
+</div>
+
+<div class="page-body">
+  <p>File {{filename}} has length {{length}}</p>
+  <p>There are {{ num_address_books }} address books defined in this config.</p>
+  <p>There are {{ num_apps }} applications defined in this config, and {{ num_app_sets }} application sets.</p>
+
+
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseAddresses" 
+          aria-expanded="false" aria-controls="collapseAddresses">
+        Addresses
+  </button>
+
+  <div class="collapse" id="collapseAddresses">
+    <!-- Table for laying out addresses with their details -->
+    <table class="table table-striped py-3">
+      <thead>
+        <tr>
+          <th>Address Book</th>
+          <th>Address/Address Set</th>
+          <th>IP/Members</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for addr_book in addresses %}
+          {% for address_entry in addr_book['address'] %}
+          <tr>
+            <td>{{addr_book['name']}}</td>
+            <td>{{ address_entry['name'] }}</td>
+            <td>{{address_entry['ip-prefix']}}</td>
+            <td>{{address_entry['description']}}</td>
+          </tr>
+          {% endfor %}
+
+          {% for address_set in addr_book['address-set'] %}
+          <tr>
+            <td>{{addr_book['name']}}</td>
+            <td>Address set: {{ address_set['name'] }}</td>
+            
+            <td>
+              <ul>
+                {% for addr_set_member in address_set['address'] %}
+                  <li>{{ addr_set_member['name'] }}</li>
+                {% endfor %}
+              </ul>
+            </td>
+            <td>{{address_set['description']}}</td>
+          </tr>
+          {% endfor %}
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseZones" 
+          aria-expanded="false" aria-controls="collapseZones">
+        Zones
+  </button>
+
+  <div class="collapse" id="collapseZones">
+    <!-- Table for laying out zones with their descriptions, was a grid but table better for data -->
+    <table class="table table-striped py-3">
+      <thead>
+        <tr>
+          <th>Zone</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for zone in zones %}
+        <tr>
+          <td>{{zone['name']}}</td>
+          <td>{{zone['description']}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseApplications" 
+          aria-expanded="false" aria-controls="collapseApplications">
+        Applications
+  </button>
+
+  <a href="{{ url_for('addapplication') }}" class="btn btn-primary" role="button"  
+          aria-expanded="false" aria-controls="AddApplication">
+        Add an Application...
+  </a>
+
+  <div class="collapse" id="collapseApplications">
+    <!-- Table for laying out applications with their descriptions, was a grid but table better for data -->
+    <table class="table table-striped py-3">
+      <thead>
+        <tr>
+          <th>Application</th>
+          <th>Destination Port</th>
+          <th>Protocol</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in applications['application'] %}
+        <tr>
+          <td>{{app['name']}}</td>
+          <td>{{app['destination-port']}}</td>
+          <td>{{app['protocol']}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseApplicationSets" 
+          aria-expanded="false" aria-controls="collapseApplicationSets">
+        Application Sets
+  </button>
+
+  <div class="collapse" id="collapseApplicationSets">
+    <!-- Table for laying out application sets with their descriptions, was a grid but table better for data -->
+    <table class="table table-striped py-3">
+      <thead>
+        <tr>
+          <th>Application-set</th>
+          <th>Applications</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appset in applications['application-set'] %}
+        <tr>
+          <td>{{appset['name']}}</td>
+          <td>
+            <ul>
+              {% for app in appset['application'] %}
+        
+              <li>{{app['name']}}</li>
+              {% endfor %}
+            </ul>
+            
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+
+</div>
+
+{% endblock %}
+
+{% block page_footer %}
+<footer class="bg-light text-center text-lg-start">
+    
+  <div class="text-left p-3" style="background-color: rgba(203, 197, 197, 0.2);">
+      <a class="btn btn-light" href="{{ return_path }}">Go Back</a>
+      <a class="btn btn-light" href="{{ url_for('createpolicy') }}">Create Policy</a>
+  </div>
+  
+</footer>
+{% endblock %}

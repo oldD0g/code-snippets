@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title%}Dummy Home Page{% endblock %}
+
+{% block page_content %}
+
+<div class="page-header">
+  <h1>Browse config</h1>
+</div>
+
+<div class="warning">This is some text</div>
+
+<div class ="info">You probably wanted to go to 
+  <a href={{ url_for('loadfile') }}>Load a file</a></div>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}Upload File{% endblock %}
+
+{% block page_content %}
+
+<div class="page-header">
+  <h1>Load configuration file</h1>
+</div>
+
+
+  <form class="form-horizontal" action="/browse" method="POST" enctype="multipart/form-data">
+
+    <div class="form-group">
+      <label for="filename_id" class="control-label col-sm-3">Choose SRX JSON File...</label>
+      <div class="input-group m-2 col-sm-3">
+        <input class="form-control" type="file" name="filename" id="filename_id" />
+      </div>
+    </div>
+
+    <div class="form-group m-2 col-sm-3">
+      <button class="btn btn-primary" type="submit" value="Submit">Submit</button>
+    </div>
+
+  
+  </form>
+
+
+{% endblock %}

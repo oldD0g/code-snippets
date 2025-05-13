@@ -1,0 +1,15 @@
+
+359 B
+
+{% extends "layout.html" %}
+{% block title %}File Format Error{% endblock %}
+{% block page_content %}
+<div class="page-header">
+  <h1>Failed to read JSON file</h1>
+</div>
+<div class="page-body">
+  <p>Failed to load file {{filename}}</p>
+  <p>Error was: {{ error }}</p>
+</div>
+<a class="btn btn-warning" href= {{ return_path}} >Go Back</a>
+{% endblock %}

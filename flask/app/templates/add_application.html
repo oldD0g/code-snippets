@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block title %}Add Application... {% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+  <h1>Config File </h1>
+</div>
+
+<div class="page-body">
+  <p>There are currently {{num_applications}} applications defined in {{filename}}</p>
+
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseApplications" 
+          aria-expanded="false" aria-controls="collapseApplications">
+        Applications
+  </button>
+
+  <button class="btn btn-primary" type="button" href="{{ url_for('addapplication') }}"" 
+          aria-expanded="false" aria-controls="AddApplication">
+        Add an Application...
+  </button>
+
+  <div class="form-wrapper">
+    <h2 class="title">New Application</h2>
+
+    <form method="POST" action="{{ url_for('contact') }}">
+
+        <fieldset class="form-field">
+            {{ form.name.label }}
+            {{ form.name(size=30) }}
+        </fieldset>
+
+        {{ form.submit }}
+
+    </form>
+  </div>
+
+  <div class="collapse" id="collapseApplications">
+    <!-- Table for laying out applications with their descriptions, was a grid but table better for data -->
+    <table class="table table-striped py-3">
+      <thead>
+        <tr>
+          <th>Application</th>
+          <th>Destination Port</th>
+          <th>Protocol</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in applications['application'] %}
+        <tr>
+          <td>{{app['name']}}</td>
+          <td>{{app['destination-port']}}</td>
+          <td>{{app['protocol']}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseApplicationSets" 
+          aria-expanded="false" aria-controls="collapseApplicationSets">
+        Application Sets
+  </button>
+  
+
+</div>
+
+{% endblock %}
+
+{% block page_footer %}
+<footer class="bg-light text-center text-lg-start">
+    
+  <div class="text-left p-3" style="background-color: rgba(203, 197, 197, 0.2);">
+      <a class="btn btn-light" href="{{ return_path }}">Go Back</a>
+      <a class="btn btn-light" href="{{ url_for('createpolicy') }}">Create Policy</a>
+  </div>
+  
+</footer>
+{% endblock %}

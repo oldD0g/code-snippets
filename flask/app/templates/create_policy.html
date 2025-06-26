@@ -1,0 +1,168 @@
+{% extends "layout.html" %}
+
+{% block title%}Create a new policy{% endblock %}
+
+{% block page_content %}
+
+<div class="page-header">
+  <h1>Create a new policy</h1>
+</div>
+
+<div class="form-wrapper">
+  <h2 class="title">Create a policy...</h2>
+
+  <form method="POST" action="{{ url_for('createpolicy') }}">
+
+      <div class="form-group">
+        {{ form.name.label(class_="control_label") }}
+        <span class="input-group-text">
+          
+          {{ form.name(size=20) }}
+        </span>
+          
+      </div>
+
+
+      <div class="form-group">
+        <span class="input-group-text">Zones</span>
+        <span class="input-group-text">
+          {{ form.fromzone.label(class_="control-label pr-2 pt-1") }}
+          {{ form.fromzone(size=1) }}
+        </span>
+        <span class="input-group-text">
+          {{ form.tozone.label(class_="control-label pr-2 pt-1") }}
+          {{ form.tozone(size=1) }}
+        </span>
+        
+      </div>
+
+      <div class="form-group">
+        <span class="input-group-text">Match Criteria</span>
+      </div>
+
+      <div class="form-group">
+        <div class="input-group-text">
+          {{ form.srcAddrs.label(class_="control-label pr-2 pt-1") }}
+        </div>
+          <div class="input-group-text">
+          {{ form.srcAddrs(size=1, class_="pr-3") }}
+          <button class="text-right btn btn-light border-primary pl-3" 
+            id="add-src-matches" type="button">Add source addresses</button>
+          </div>
+      </div>
+
+      <div class="form-group">
+        <div class="input-group-text">
+          {{ form.dstAddrs.label(class_="control-label pr-2 pt-1") }}
+        </div>
+        <div class="input-group-text">
+          {{ form.dstAddrs(size=1, class_="pr-3") }}
+            <button class="text-right btn btn-light border-primary pl-3" 
+            id="add-dst-matches" type="button">Add dest addresses</button>
+        </div>
+      </div>
+      
+      <div class="form-group form-group-inline">
+        <div class="input-group-text">Actions</div>
+        <span class="form-check form-check-inline input-group-text">
+          <input class="form-check-input" type="radio" 
+            name="policyActions" id="action-permit" value="permit" checked>
+          <label class="form-check-label" for="action-permit">
+            Permit
+          </label>
+        </span>
+        <span class="form-check form-check-inline input-group-text">
+          <input class="form-check-input" type="radio" 
+          name="policyActions" id="action-deny" value="deny">
+          <label class="form-check-label" for="action-deny">
+            Deny
+          </label>
+        </span>
+      </div>
+
+      <div class="form-group">
+        <span class="input-group-text">Logging</span>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="log-init" value="log session-init" checked="true">
+          <label class="form-check-label" for="inlineCheckbox2">session-init</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="log-close" value="log session-close" checked="true">
+          <label class="form-check-label" for="inlineCheckbox3">session-close</label>
+        </div>
+      </div>
+      
+
+      <div class="form-group">
+        {{ form.submit }}
+      </div>
+
+  </form>
+</div>
+
+<div class="page-body">
+    <p>File {{filename}} has length {{length}}</p>
+    <div class="warning">Display policy options here...</div>
+</div>
+
+<div class="page-body">
+  <p>The zones are: {{zones}}</p>
+  <p>The names of the zones: {{zone_names}}</p>
+  
+</div>
+
+{% endblock %}
+
+{% block page_footer %}
+<footer class="bg-light text-center text-lg-start">
+    
+  <div class="text-left p-3" style="background-color: rgba(203, 197, 197, 0.2);">
+      <a class="btn btn-light" href="{{ return_path }}">New File</a>
+
+      <a class="btn btn-light" href="{{ url_for('createpolicy') }}">Export Policy</a>
+  </div>
+  
+</footer>
+<script>
+  window.onload = function() {
+      let addSrcAddrBtn = document.getElementById('add-src-matches');
+      let addDstAddrBtn = document.getElementById('add-dst-matches');
+
+      addSrcAddrBtn.addEventListener('click', function(e){
+          e.preventDefault();
+          let allMatchFieldWrapper = document.getElementById('srcAddrs');
+          let allMatchField = allMatchFieldWrapper.getElementsByTagName('input');
+          if(allMatchField.length > 4) {
+              alert('You can have only five match criteria');
+              return;
+          }
+          let matchIds = []
+          for(let i = 0; i < allMatchField.length; i++) {
+              matchIds.push(parseInt(allMatchField[i].name.split('-')[1]));
+          }
+          let newFieldName = `match-${Math.max(...matchIds) + 1}`;
+          allMatchFieldWrapper.insertAdjacentHTML('beforeend',`
+          <li><label for="${newFieldName}">source-address</label> <input id="${newFieldName}" name="${newFieldName}" type="text" value=""></li> 
+          `);
+      });
+      addDstAddrBtn.addEventListener('click', function(e){
+          e.preventDefault();
+          let allDstFieldWrapper = document.getElementById('dstAddrs');
+          let allDstField = allDstFieldWrapper.getElementsByTagName('input');
+          if(allDstField.length > 4) {
+              alert('You can have only five match criteria');
+              return;
+          }
+          let matchIds = []
+          for(let i = 0; i < allDstField.length; i++) {
+              matchIds.push(parseInt(allDstField[i].name.split('-')[1]));
+          }
+          let newFieldName = `dst-${Math.max(...matchIds) + 1}`;
+          allDstFieldWrapper.insertAdjacentHTML('beforeend',`
+          <li><label for="${newFieldName}">destination-address</label> <input id="${newFieldName}" name="${newFieldName}" type="text" value=""></li> 
+          `);
+      });
+  }
+</script>
+{% endblock %}
+

@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}Configuration File {% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+  <h1>Test Grid Layout for Addresses </h1>
+</div>
+
+<div class="container">
+    <div class="row border">
+        <div class="col-sm">
+            Column One
+        </div>
+        <div class="col-sm">
+            Column Two
+        </div>
+        <div class="col-sm">
+            Column Three
+        </div>
+    </div>
+
+    <div class="row border">
+        <div class="col-sm .col-6 border">
+            Column One
+        </div>
+        <div class="col-sm .col-6 border">
+            Column Two
+        </div>
+    </div>
+  
+</div>
+
+<a class="btn btn-warning" href="{{ return_path }}">Go Back</a>
+{% endblock %}
